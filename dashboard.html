@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce User Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script src="./Assets/JS/app.js"></script>
+    <script src="./Assets/JS/doctor.js"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen">
+    <div x-data="{ openSidebar: false, activeSection: 'dashboard' }" class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar -->
+        <aside class="bg-white shadow-lg transition-all duration-300 ease-in-out fixed md:static inset-y-0 left-0 z-50 w-20 md:w-64"
+               :class="{ 'w-64': openSidebar, 'hidden md:block': !openSidebar }">
+            <div class="p-4 flex items-center justify-between border-b">
+                <h1 :class="{ 'opacity-100': openSidebar || window.innerWidth >= 768, 'opacity-0 hidden': !openSidebar && window.innerWidth < 768 }" 
+                    class="text-4xl font-bold text-green-600 transition-opacity duration-300">Medico</h1>
+                <button @click="openSidebar = !openSidebar" class="md:hidden p-2 rounded-full hover:bg-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+            <nav class="py-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" @click.prevent="activeSection = 'dashboard'; openSidebar = false" 
+                           class="flex items-center space-x-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors" 
+                           :class="{ 'bg-gray-100': activeSection === 'dashboard' }">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0l-2-2m2 2V4a1 1 0 00-1-1h-3a1 1 0 00-1 1z" />
+                            </svg>
+                            <span :class="{ 'block opacity-100': openSidebar || window.innerWidth >= 768, 'hidden opacity-0': !openSidebar && window.innerWidth < 768 }" 
+                                  class="text-gray-700 transition-opacity duration-300">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" @click.prevent="activeSection = 'orders'; openSidebar = false" 
+                           class="flex items-center space-x-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors" 
+                           :class="{ 'bg-gray-100': activeSection === 'orders' }">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                            </svg>
+                            <span :class="{ 'block opacity-100': openSidebar || window.innerWidth >= 768, 'hidden opacity-0': !openSidebar && window.innerWidth < 768 }" 
+                                  class="text-gray-700 transition-opacity duration-300">Appoinment</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" @click.prevent="activeSection = 'doctor'; openSidebar = false" 
+                           class="flex items-center space-x-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors" 
+                           :class="{ 'bg-gray-100': activeSection === 'orders' }">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                            </svg>
+                            <span :class="{ 'block opacity-100': openSidebar || window.innerWidth >= 768, 'hidden opacity-0': !openSidebar && window.innerWidth < 768 }" 
+                                  class="text-gray-700 transition-opacity duration-300">Doctors</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" @click.prevent="activeSection = 'profile'; openSidebar = false" 
+                           class="flex items-center space-x-3 px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors" 
+                           :class="{ 'bg-gray-100': activeSection === 'profile' }">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span :class="{ 'block opacity-100': openSidebar || window.innerWidth >= 768, 'hidden opacity-0': !openSidebar && window.innerWidth < 768 }" 
+                                  class="text-gray-700 transition-opacity duration-300">Profile</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-4 md:p-6 overflow-y-auto">
+            <!-- Mobile Menu Toggle -->
+            <div class="md:hidden flex justify-between items-center mb-4">
+                <h1 class="text-xl font-bold text-gray-800">E-Commerce</h1>
+                <button @click="openSidebar = !openSidebar" class="p-2 rounded-full hover:bg-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div x-show="activeSection === 'dashboard'" class="space-y-6">
+                <header>
+                    <h1 class="text-2xl font-bold text-gray-800">Welcome Back, rifatbroh_</h1>
+                    <p class="text-gray-600">Here's what's happening with your account today.</p>
+                </header>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow-md cursor-pointer">
+                        <h2 class="text-2xl font-semibold text-gray-700">Total Users</h2>
+                        <p class="text-3xl font-bold text-green-600">120</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md cursor-pointer">
+                        <h2 class="text-2xl font-semibold text-gray-700">Completed</h2>
+                        <p class="text-3xl font-bold text-yellow-600">32+</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md cursor-pointer">
+                        <h2 class="text-2xl font-semibold text-gray-700">Pending</h2>
+                        <p class="text-3xl font-bold text-blue-600">18</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md cursor-pointer">
+                        <h2 class="text-2xl font-semibold text-gray-700">Doctor Assign</h2>
+                        <p class="text-3xl font-bold text-purple-600">10</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md cursor-pointer">
+                        <h2 class="text-2xl font-semibold text-gray-700">Campaign Status</h2>
+                        <p class="text-3xl font-bold text-cyan-600">7</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md cursor-pointer">
+                        <h2 class="text-2xl font-semibold text-gray-700">Category</h2>
+                        <p class="text-3xl font-bold text-red-600">10</p>
+                    </div>
+                </div>
+                            <!-- Vaccine Overview-->
+            <div class="overview flex">
+              <div class="user">
+                <!-- Website Traffic Card Component -->
+<div class="max-w-sm w-full bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
+  <!-- Header -->
+  <div class="flex justify-between mb-3">
+    <div class="flex items-center ">
+      <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white pe-1">Vaccination progress</h5>
+      <!-- Info Icon -->
+      <svg data-popover-target="chart-info" data-popover-placement="bottom" class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white cursor-pointer ms-1" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm0 16a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm1-5.034V12a1 1 0 0 1-2 0v-1.418a1 1 0 0 1 1.038-.999 1.436 1.436 0 0 0 1.488-1.441 1.501 1.501 0 1 0-3-.116.986.986 0 0 1-1.037.961 1 1 0 0 1-.96-1.037A3.5 3.5 0 1 1 11 11.466Z"/>
+      </svg>
+    </div>
+    <!-- Download Button -->
+    <button type="button" class="hidden sm:inline-flex items-center justify-center text-gray-500 w-8 h-8 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none rounded-lg text-sm">
+      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 16 18" xmlns="http://www.w3.org/2000/svg">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 1v11m0 0 4-4m-4 4L4 8m11 4v3a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-3"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Device Selection -->
+  <div class="flex" id="devices">
+    <div class="flex items-center me-4">
+      <input id="desktop" type="checkbox" value="desktop" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm">
+      <label for="desktop" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Phizer</label>
+    </div>
+    <div class="flex items-center me-4">
+      <input id="tablet" type="checkbox" value="tablet" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm">
+      <label for="tablet" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">convex</label>
+    </div>
+    <div class="flex items-center me-4">
+      <input id="mobile" type="checkbox" value="mobile" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm">
+      <label for="mobile" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Znova</label>
+    </div>
+  </div>
+
+  <!-- Donut Chart -->
+  <div class="py-6" id="donut-chart"></div>
+
+  <!-- Footer -->
+  <div class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
+    <div class="flex justify-between items-center pt-5">
+      <button id="dropdownDefaultButton" data-dropdown-toggle="lastDaysdropdown" class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 inline-flex items-center">
+        Last 7 days
+        <svg class="w-2.5 h-2.5 ms-1.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+        </svg>
+      </button>
+      <a href="#" class="uppercase text-sm font-semibold inline-flex items-center text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 px-3 py-2">
+        Traffic analysis
+        <svg class="w-2.5 h-2.5 ms-1.5 rtl:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+              </div>
+              <div class="doctor ml-20">
+                
+<div class="max-w-sm w-full bg-white rounded-lg shadow-sm dark:bg-gray-800 p-4 md:p-6">
+  <div class="flex justify-between mb-3">
+    <div class="flex items-center">
+      <div class="flex justify-center items-center">
+        <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white pe-1">Overview Tracker</h5>
+        <svg data-popover-target="chart-info" data-popover-placement="bottom" class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white cursor-pointer ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm0 16a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm1-5.034V12a1 1 0 0 1-2 0v-1.418a1 1 0 0 1 1.038-.999 1.436 1.436 0 0 0 1.488-1.441 1.501 1.501 0 1 0-3-.116.986.986 0 0 1-1.037.961 1 1 0 0 1-.96-1.037A3.5 3.5 0 1 1 11 11.466Z"/>
+        </svg>
+        <div data-popover id="chart-info" role="tooltip" class="absolute z-10 invisible inline-block text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-xs opacity-0 w-72 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400">
+            <div class="p-3 space-y-2">
+                <h3 class="font-semibold text-gray-900 dark:text-white">Activity growth - Incremental</h3>
+                <p>Report helps navigate cumulative growth of community activities. Ideally, the chart should have a growing trend, as stagnating chart signifies a significant decrease of community activity.</p>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Calculation</h3>
+                <p>For each date bucket, the all-time volume of activities is calculated. This means that activities in period n contain all activities up to period n, plus the activities generated by your community in period.</p>
+                <a href="#" class="flex items-center font-medium text-blue-600 dark:text-blue-500 dark:hover:text-blue-600 hover:text-blue-700 hover:underline">Read more <svg class="w-2 h-2 ms-1.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+          </svg></a>
+            </div>
+            <div data-popper-arrow></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+    <div class="grid grid-cols-3 gap-3 mb-2">
+      <dl class="bg-orange-50 dark:bg-gray-600 rounded-lg flex flex-col items-center justify-center h-[78px]">
+        <dt class="w-8 h-8 rounded-full bg-orange-100 dark:bg-gray-500 text-orange-600 dark:text-orange-300 text-sm font-medium flex items-center justify-center mb-1">12</dt>
+        <dd class="text-orange-600 dark:text-orange-300 text-sm font-medium">Processing</dd>
+      </dl>
+      <dl class="bg-teal-50 dark:bg-gray-600 rounded-lg flex flex-col items-center justify-center h-[78px]">
+        <dt class="w-8 h-8 rounded-full bg-teal-100 dark:bg-gray-500 text-teal-600 dark:text-teal-300 text-sm font-medium flex items-center justify-center mb-1">23</dt>
+        <dd class="text-teal-600 dark:text-teal-300 text-sm font-medium">In progress</dd>
+      </dl>
+      <dl class="bg-blue-50 dark:bg-gray-600 rounded-lg flex flex-col items-center justify-center h-[78px]">
+        <dt class="w-8 h-8 rounded-full bg-blue-100 dark:bg-gray-500 text-blue-600 dark:text-blue-300 text-sm font-medium flex items-center justify-center mb-1">64</dt>
+        <dd class="text-blue-600 dark:text-blue-300 text-sm font-medium">Done</dd>
+      </dl>
+    </div>
+    <button data-collapse-toggle="more-details" type="button" class="hover:underline text-xs text-gray-500 dark:text-gray-400 font-medium inline-flex items-center">Show more details <svg class="w-2 h-2 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+      </svg>
+    </button>
+    <div id="more-details" class="border-gray-200 border-t dark:border-gray-600 pt-3 mt-3 space-y-2 hidden">
+      <dl class="flex items-center justify-between">
+        <dt class="text-gray-500 dark:text-gray-400 text-sm font-normal">Average task completion rate:</dt>
+        <dd class="bg-green-100 text-green-800 text-xs font-medium inline-flex items-center px-2.5 py-1 rounded-md dark:bg-green-900 dark:text-green-300">
+          <svg class="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
+          </svg> 57%
+        </dd>
+      </dl>
+      <dl class="flex items-center justify-between">
+        <dt class="text-gray-500 dark:text-gray-400 text-sm font-normal">Days until sprint ends:</dt>
+        <dd class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-1 rounded-md dark:bg-gray-600 dark:text-gray-300">13 days</dd>
+      </dl>
+      <dl class="flex items-center justify-between">
+        <dt class="text-gray-500 dark:text-gray-400 text-sm font-normal">Next meeting:</dt>
+        <dd class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-1 rounded-md dark:bg-gray-600 dark:text-gray-300">Thursday</dd>
+      </dl>
+    </div>
+  </div>
+
+  <!-- Radial Chart -->
+  <div class="py-6" id="radial-chart"></div>
+
+  <div class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
+    <div class="flex justify-between items-center pt-5">
+      <!-- Button -->
+      <button
+        id="dropdownDefaultButton"
+        data-dropdown-toggle="lastDaysdropdown"
+        data-dropdown-placement="bottom"
+        class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
+        type="button">
+        Last 7 days
+        <svg class="w-2.5 m-2.5 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+        </svg>
+      </button>
+      <div id="lastDaysdropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+          <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+            <li>
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Yesterday</a>
+            </li>
+            <li>
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Today</a>
+            </li>
+            <li>
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 7 days</a>
+            </li>
+            <li>
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 30 days</a>
+            </li>
+            <li>
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 90 days</a>
+            </li>
+          </ul>
+      </div>
+      <a
+        href="#"
+        class="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500  hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2">
+        Progress report
+        <svg class="w-2.5 h-2.5 ms-1.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+              </div>
+              <div class="total-overview pl-16">
+                  
+<div class="max-w-sm w-full bg-white rounded-lg shadow-sm dark:bg-gray-800">
+  <div class="flex justify-between p-4 md:p-6 pb-0 md:pb-0">
+    <div>
+      <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white pe-1">User Tracker</h5>
+      <h5 class="leading-none text-3xl font-bold text-gray-900 dark:text-white pb-2">120</h5>
+      <p class="text-base font-normal text-gray-500 dark:text-gray-400">Sales this week</p>
+    </div>
+    <div
+      class="flex items-center px-2.5 py-0.5 text-base font-semibold text-green-500 dark:text-green-500 text-center">
+      23%
+      <svg class="w-3 h-3 ms-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
+      </svg>
+    </div>
+  </div>
+  <div id="labels-chart" class="px-2.5"></div>
+  <div class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between mt-5 p-4 md:p-6 pt-0 md:pt-0">
+    <div class="flex justify-between items-center pt-5">
+      <!-- Button -->
+      <button
+        id="dropdownDefaultButton"
+        data-dropdown-toggle="lastDaysdropdown"
+        data-dropdown-placement="bottom"
+        class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 text-center inline-flex items-center dark:hover:text-white"
+        type="button">
+        Last 7 days
+        <svg class="w-2.5 m-2.5 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+        </svg>
+      </button>
+      <!-- Dropdown menu -->
+      <div id="lastDaysdropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+          <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+            <li>
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Yesterday</a>
+            </li>
+            <li>
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Today</a>
+            </li>
+            <li>
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 7 days</a>
+            </li>
+            <li>
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 30 days</a>
+            </li>
+            <li>
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Last 90 days</a>
+            </li>
+          </ul>
+      </div>
+      <a
+        href="#"
+        class="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-blue-600 hover:text-blue-700 dark:hover:text-blue-500  hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2">
+        Sales Report
+        <svg class="w-2.5 h-2.5 ms-1.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+              </div>
+              
+            </div>
+            
+            </div>
+
+            <!-- Orders Section -->
+            <div x-show="activeSection === 'orders'" class="space-y-6">
+                <header>
+                    <h1 class="text-2xl font-bold text-gray-800">Your Orders</h1>
+                    <p class="text-gray-600">View and manage your recent orders.</p>
+                </header>
+                <div class="bg-white p-4 rounded-lg shadow-md overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-lg font-semibold text-black uppercase tracking-wider">Appoinment ID</th>
+                                <th class="px-4 py-3 text-left text-lg font-semibold text-black uppercase tracking-wider">Date</th>
+                                <th class="px-4 py-3 text-left text-lg font-semibold text-black uppercase tracking-wider">Type</th>
+                                <th class="px-4 py-3 text-left text-lg font-semibold text-black uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD12345</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-02-10</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">PHIZER</td>
+                                <td class="px-4 py-3 w-20 text-sm font-bold text-green-600">Completed</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-4-05</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">ZNOVA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-yellow-600">Pending</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-5-07</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">MORDANA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-blue-400">Processing</td>
+                            </tr>
+                               <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD12345</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-02-10</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">PHIZER</td>
+                                <td class="px-4 py-3 w-20 text-sm font-bold text-green-600">Completed</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-4-05</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">ZNOVA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-yellow-600">Pending</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-5-07</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">MORDANA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-blue-400">Processing</td>
+                            </tr>
+                               <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD12345</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-02-10</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">PHIZER</td>
+                                <td class="px-4 py-3 w-20 text-sm font-bold text-green-600">Completed</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-4-05</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">ZNOVA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-yellow-600">Pending</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-5-07</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">MORDANA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-blue-400">Processing</td>
+                            </tr>
+                               <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD12345</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-02-10</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">PHIZER</td>
+                                <td class="px-4 py-3 w-20 text-sm font-bold text-green-600">Completed</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-4-05</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">ZNOVA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-yellow-600">Pending</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-5-07</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">MORDANA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-blue-400">Processing</td>
+                            </tr>
+                               <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD12345</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-02-10</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">PHIZER</td>
+                                <td class="px-4 py-3 w-20 text-sm font-bold text-green-600">Completed</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-4-05</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">ZNOVA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-yellow-600">Pending</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-5-07</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">MORDANA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-blue-400">Processing</td>
+                            </tr>
+                               <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD12345</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-02-10</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">PHIZER</td>
+                                <td class="px-4 py-3 w-20 text-sm font-bold text-green-600">Completed</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-4-05</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">ZNOVA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-yellow-600">Pending</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-5-07</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">MORDANA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-blue-400">Processing</td>
+                            </tr>
+                               <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD12345</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-02-10</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">PHIZER</td>
+                                <td class="px-4 py-3 w-20 text-sm font-bold text-green-600">Completed</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-4-05</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">ZNOVA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-yellow-600">Pending</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-5-07</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">MORDANA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-blue-400">Processing</td>
+                            </tr>
+                               <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD12345</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-02-10</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">PHIZER</td>
+                                <td class="px-4 py-3 w-20 text-sm font-bold text-green-600">Completed</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-4-05</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">ZNOVA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-yellow-600">Pending</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-5-07</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">MORDANA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-blue-400">Processing</td>
+                            </tr>
+                               <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD12345</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-02-10</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">PHIZER</td>
+                                <td class="px-4 py-3 w-20 text-sm font-bold text-green-600">Completed</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-4-05</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">ZNOVA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-yellow-600">Pending</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-5-07</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">MORDANA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-blue-400">Processing</td>
+                            </tr>
+                               <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD12345</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-02-10</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">PHIZER</td>
+                                <td class="px-4 py-3 w-20 text-sm font-bold text-green-600">Completed</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-4-05</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">ZNOVA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-yellow-600">Pending</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">#ORD67890</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">2025-5-07</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">MORDANA</td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-bold text-blue-400">Processing</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Doctor section-->
+            <div x-show="activeSection === 'doctor'" class="space-y-6">
+                <header>
+                    <h1 class="text-2xl font-bold text-gray-800">Registerd Doctors</h1>
+                    <p class="text-gray-600">All of doctors information here.</p>
+                </header>
+               <div class="doctors-profile grid grid-cols-3 gap-7">
+                  <div class="doctors-1">
+                    
+
+<div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+    <div class="flex justify-end px-4 pt-4">
+        <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
+            <span class="sr-only">Open dropdown</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
+                <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
+            </svg>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="dropdown" class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+            <ul class="py-2" aria-labelledby="dropdownButton">
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Export Data</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
+            </li>
+            </ul>
+        </div>
+    </div>
+    <div class="flex flex-col items-center pb-10">
+        <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="./Assets/Images/d1.jpg" alt="Bonnie image"/>
+        <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Md. Mamun Ahmed</h5>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Pfizer specialist</span>
+        <div class="flex mt-4 md:mt-6">
+            <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">View Details</a>
+            <a href="#" class="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Message</a>
+        </div>
+    </div>
+</div>
+
+                  </div>
+                  <div class="doctors-2">
+                    <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+    <div class="flex justify-end px-4 pt-4">
+        <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
+            <span class="sr-only">Open dropdown</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
+                <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
+            </svg>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="dropdown" class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+            <ul class="py-2" aria-labelledby="dropdownButton">
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Export Data</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
+            </li>
+            </ul>
+        </div>
+    </div>
+    <div class="flex flex-col items-center pb-10">
+        <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="./Assets/Images/d2.jpg" alt="Bonnie image"/>
+        <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Jannatul Ferdus</h5>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Pfizer specialist</span>
+        <div class="flex mt-4 md:mt-6">
+            <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">View Details</a>
+            <a href="#" class="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Message</a>
+        </div>
+    </div>
+</div>
+                  </div>
+                  <div class="doctors-3">
+                    <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+    <div class="flex justify-end px-4 pt-4">
+        <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
+            <span class="sr-only">Open dropdown</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
+                <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
+            </svg>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="dropdown" class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+            <ul class="py-2" aria-labelledby="dropdownButton">
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Export Data</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
+            </li>
+            </ul>
+        </div>
+    </div>
+    <div class="flex flex-col items-center pb-10">
+        <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="./Assets/Images/d4.jpg" alt="Bonnie image"/>
+        <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Yeasin Mollah</h5>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Convex specialist</span>
+        <div class="flex mt-4 md:mt-6">
+            <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">View Details</a>
+            <a href="#" class="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Message</a>
+        </div>
+    </div>
+</div>
+                  </div>
+                  <div class="doctors-4">
+                    <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+    <div class="flex justify-end px-4 pt-4">
+        <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
+            <span class="sr-only">Open dropdown</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
+                <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
+            </svg>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="dropdown" class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+            <ul class="py-2" aria-labelledby="dropdownButton">
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Export Data</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
+            </li>
+            </ul>
+        </div>
+    </div>
+    <div class="flex flex-col items-center pb-10">
+        <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="./Assets/Images/d3.jpg" alt="Bonnie image"/>
+        <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Nilufa Parvin</h5>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Vaccination Core</span>
+        <div class="flex mt-4 md:mt-6">
+            <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">View Details</a>
+            <a href="#" class="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Message</a>
+        </div>
+    </div>
+</div>
+                  </div>
+                  <div class="doctors-5">
+                    <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+    <div class="flex justify-end px-4 pt-4">
+        <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
+            <span class="sr-only">Open dropdown</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
+                <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
+            </svg>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="dropdown" class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+            <ul class="py-2" aria-labelledby="dropdownButton">
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Export Data</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
+            </li>
+            </ul>
+        </div>
+    </div>
+    <div class="flex flex-col items-center pb-10">
+        <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="./Assets/Images/d8.jpg" alt="Bonnie image"/>
+        <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">GM Mostak</h5>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Vaccination Core</span>
+        <div class="flex mt-4 md:mt-6">
+            <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">View Details</a>
+            <a href="#" class="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Message</a>
+        </div>
+    </div>
+</div>
+                  </div>
+              
+                  <div class="doctors-10">
+                    <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+    <div class="flex justify-end px-4 pt-4">
+        <button id="dropdownButton" data-dropdown-toggle="dropdown" class="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5" type="button">
+            <span class="sr-only">Open dropdown</span>
+            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
+                <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
+            </svg>
+        </button>
+        <!-- Dropdown menu -->
+        <div id="dropdown" class="z-10 hidden text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+            <ul class="py-2" aria-labelledby="dropdownButton">
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Export Data</a>
+            </li>
+            <li>
+                <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
+            </li>
+            </ul>
+        </div>
+    </div>
+    <div class="flex flex-col items-center pb-10">
+        <img class="w-24 h-24 mb-3 rounded-full shadow-lg" src="./Assets/Images/d7.jpg" alt="Bonnie image"/>
+        <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">Sultana Mahmud</h5>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Morderna specialist</span>
+        <div class="flex mt-4 md:mt-6">
+            <a href="#" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">View Details</a>
+            <a href="#" class="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Message</a>
+        </div>
+    </div>
+</div>
+                  </div>
+                </div>
+              </div>
+
+            <!-- Profile Section -->
+            <div x-show="activeSection === 'profile'" class="space-y-6">
+                <header>
+                    <h1 class="text-2xl font-bold text-gray-800">Your Profile</h1>
+                    <p class="text-gray-600">Update your personal information and settings.</p>
+                </header>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <form class="space-y-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" id="name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" placeholder="John Doe">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                            <input type="email" id="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" placeholder="john.doe@example.com">
+                        </div>
+                        <button type="submit" class="w-full sm:w-auto inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
